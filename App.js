@@ -1,51 +1,51 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, ScrollView, FlatList, TouchableOpacity, } from 'react-native';
+import Header from'./components/header'
+import TodoItem from './components/todoItem';
+import Addtodo from './components/addTodo';
 
 export default function App() {
-  const [name, setName] = useState('Song');
-  const [age, setAge] = useState('30');
+  const [todos, setTodos] = useState([
+    { text: 'buy coffee', key: '1' },
+    { text: 'pay bills', key: '2' },
+    { text: 'apply to jobs', key: '3' },
+    { text: 'do dishes', key: '4' },
+  ]);
 
-  const clickHandler = () => {
-    if (name === 'Song'){
-      setName('Subzero')
-    }
-    if (name === 'Subzero'){
-      setName('Song')
-    }
+  const pressHandler = (key) => {
+    setTodos((prevTodos) => {
+      console.log(key)
+      return prevTodos.filter(todo => todo.key != key);
+    })
+  };
+
+  const submitHandler = (text) => {
+    setTodos((prevTodos) => {
+      return [
+        { text: text, key: Math.random().toString() }, //this is not great.
+        ...prevTodos, 
+      ]
+    })
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.boldText}>Hello World!</Text>
-      </View>
-      <View style={styles.body}>
-        <Text style={styles.boldText}>This is my<Text> test </Text> Text component</Text>
-        <Text>This is my Text component</Text>
-
-
-        <Text>This is my name, {name}.</Text>
-        <View style={styles.buttonContainer}>
-          <Button title='update state' onPress={clickHandler} />
+    <>
+      <View style={styles.container}>
+        <Header />
+        <View style={styles.content}>
+          <Addtodo submitHandler={submitHandler} />
+          <View style={styles.list}>
+            <FlatList 
+              data={todos}
+              renderItem={({ item }) => (
+                <TodoItem item={item} pressHandler={pressHandler} />
+              )}
+            />
+          </View>
         </View>
-
-        <Text>name: {name}, age: {age}</Text>
-        <Text>Enter name:</Text>
-        <TextInput
-          multiline
-          style={styles.input}
-          placeholder='e.g. John Doe'
-          onChangeText={(value) => setName(value)} />
-        <Text>Enter age:</Text>
-        <TextInput
-          keyboardType='numeric'
-          style={styles.input}
-          placeholder='e.g. 99'
-          onChangeText={(value) => setAge(value)} />
-      </View>    
-      <StatusBar style="auto" />
-    </View>
+      </View>
+    </>
   );
 }
 
@@ -53,29 +53,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-  header: {
-    backgroundColor: 'pink',
-    padding: 20,
+  content: {
+    padding: 40,
   },
-  boldText: {
-    fontWeight: 'bold',
-  }, 
-  body: {
-    backgroundColor: 'yellow',
-    padding: 30,
-  },
-  buttonContainer: {
+  list: {
     marginTop: 20,
-    marginBottom: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#777',
-    padding: 8,
-    margin: 10,
-    width: 200,
   },
 });
